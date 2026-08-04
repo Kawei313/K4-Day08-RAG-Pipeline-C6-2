@@ -108,9 +108,31 @@ def evaluate_with_ragas(rag_pipeline, golden_dataset: list[dict]) -> dict:
 
     print("Bắt đầu đánh giá với RAGAS...")
     dataset = Dataset.from_dict(eval_data)
+    
+    import os
+    # Cấu hình sử dụng Gemini nếu có key
+    gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    kwargs = {}
+    
+    if gemini_key:
+        try:
+            from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+            print("Phát hiện khóa API của Gemini! Cấu hình RAGAS sử dụng Gemini...")
+            # Sử dụng flash để tiết kiệm chi phí và tốc độ nhanh, hoặc đổi sang pro nếu cần
+            gemini_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=gemini_key)
+            gemini_embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=gemini_key)
+            
+            kwargs["llm"] = gemini_llm
+            kwargs["embeddings"] = gemini_embeddings
+        except ImportError:
+            print("CẢNH BÁO: Tìm thấy GEMINI_API_KEY nhưng thư viện 'langchain-google-genai' chưa được cài đặt.")
+            print("Vui lòng chạy lệnh: pip install langchain-google-genai")
+            print("Sử dụng cấu hình mặc định của Ragas (OpenAI).")
+
     result = evaluate(
         dataset,
         metrics=[faithfulness, answer_relevancy, context_recall, context_precision],
+        **kwargs
     )
     return result.to_pandas()
 
@@ -254,4 +276,4 @@ if __name__ == "__main__":
         import traceback
         traceback.print_exc()
         print(f"\nLỗi khi chạy RAGAS: {e}")
-        print("Lưu ý: RAGAS cần OPENAI_API_KEY để gọi mô hình Judge.")
+        print("Lưu ý: RAGAS cần OPENAI_API_KEY (mặc định) hoặc GEMINI_API_KEY/GOOGLE_API_KEY để gọi mô hình Judge.")
