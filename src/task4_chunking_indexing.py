@@ -34,6 +34,7 @@ chroma_db/ cũ trước khi reindex — nếu không, chunk cũ và mới sẽ t
 trong cùng collection, retrieval sẽ trả về kết quả rác từ dữ liệu cũ.
 """
 
+from functools import lru_cache
 from pathlib import Path
 
 STANDARDIZED_DIR = Path(__file__).parent.parent / "data" / "standardized"
@@ -73,18 +74,9 @@ CHUNKING_METHOD = "recursive"  # "recursive" | "markdown_header" | "semantic"
 
 # TODO: Chọn embedding model và giải thích
 
-# Model embedding BAAI/bge-m3 tạo vector biểu diễn ý nghĩa của văn bản.
-# Chọn bge-m3 vì:
-# - Hỗ trợ đa ngôn ngữ tốt, đặc biệt phù hợp khi chatbot nhận cả tiếng Việt và tiếng Anh.
-# - Có chất lượng retrieval tốt cho RAG/search.
-# - Có thể chạy local, không phụ thuộc API và không phát sinh chi phí theo token.
-# - Phù hợp cho hệ thống e-commerce vì người dùng có thể tìm bằng nhiều cách diễn đạt:
-#   "đổi hàng", "trả sản phẩm", "refund", "return policy", ...
-EMBEDDING_MODEL = "BAAI/bge-m3"  # Vì sao? Multilingual, tốt cho tiếng Việt lẫn tiếng Anh
-
-# Số chiều của vector được bge-m3 tạo ra là 1024.
-# Vector có nhiều chiều hơn thường giữ được nhiều thông tin ngữ nghĩa hơn,
-# nhưng cũng tốn thêm RAM/dung lượng lưu trữ và thời gian tìm kiếm.
+# BGE-M3 is multilingual and gives stronger Vietnamese/English retrieval for
+# this policy corpus. It runs locally and does not require an embedding API key.
+EMBEDDING_MODEL = "BAAI/bge-m3"
 EMBEDDING_DIM = 1024
 
 # TODO: Chọn vector store
@@ -181,18 +173,25 @@ def chunk_documents(documents: list[dict]) -> list[dict]:
     # raise NotImplementedError("Implement chunk_documents")
 
     """Chia từng document thành chunks có metadata."""
-    from langchain_text_splitters import RecursiveCharacterTextSplitter
+    try:
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-        separators=["\n\n", "\n", ". ", " ", ""],
-    )
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=CHUNK_SIZE,
+            chunk_overlap=CHUNK_OVERLAP,
+            separators=["\n\n", "\n", ". ", " ", ""],
+        )
+        split_text = splitter.split_text
+    except ModuleNotFoundError:
+        # Lightweight fallback so data validation can run before optional packages install.
+        def split_text(text: str) -> list[str]:
+            step = CHUNK_SIZE - CHUNK_OVERLAP
+            return [text[start:start + CHUNK_SIZE] for start in range(0, len(text), step)]
 
     chunks = []
 
     for doc in documents:
-        splits = splitter.split_text(doc["content"])
+        splits = split_text(doc["content"])
 
         for chunk_index, chunk_text in enumerate(splits):
             chunks.append(
@@ -237,7 +236,7 @@ def embed_chunks(chunks: list[dict]) -> list[dict]:
     if not chunks:
         return []
 
-    model = SentenceTransformer(EMBEDDING_MODEL)
+    model = get_embedding_model()
     texts = [chunk["content"] for chunk in chunks]
 
     embeddings = model.encode(
@@ -250,6 +249,22 @@ def embed_chunks(chunks: list[dict]) -> list[dict]:
         chunk["embedding"] = embedding.tolist()
 
     return chunks
+
+
+@lru_cache(maxsize=1)
+def get_embedding_model():
+    """Load one shared embedding model for indexing and query embedding."""
+    from sentence_transformers import SentenceTransformer
+
+    return SentenceTransformer(EMBEDDING_MODEL)
+
+
+def get_collection():
+    """Open the existing persistent Chroma collection created by this task."""
+    import chromadb
+
+    client = chromadb.PersistentClient(path=str(CHROMA_DIR))
+    return client.get_collection(name=COLLECTION_NAME)
 
 
 def index_to_vectorstore(chunks: list[dict]):
@@ -316,16 +331,16 @@ def run_pipeline():
     print("=" * 50)
 
     docs = load_documents()
-    print(f"\n✓ Loaded {len(docs)} documents")
+    print(f"\n[OK] Loaded {len(docs)} documents")
 
     chunks = chunk_documents(docs)
-    print(f"✓ Created {len(chunks)} chunks")
+    print(f"[OK] Created {len(chunks)} chunks")
 
     chunks = embed_chunks(chunks)
-    print(f"✓ Embedded {len(chunks)} chunks")
+    print(f"[OK] Embedded {len(chunks)} chunks")
 
     index_to_vectorstore(chunks)
-    print("✓ Indexed to vector store")
+    print("[OK] Indexed to vector store")
 
 
 if __name__ == "__main__":
