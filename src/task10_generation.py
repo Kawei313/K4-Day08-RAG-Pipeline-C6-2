@@ -119,7 +119,7 @@ def format_context(chunks: list[dict]) -> str:
 # GENERATION
 # =============================================================================
 
-def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
+def generate_with_citation(query: str, top_k: int = TOP_K, **kwargs) -> dict:
     """
     End-to-end RAG generation có citation.
 
@@ -141,7 +141,7 @@ def generate_with_citation(query: str, top_k: int = TOP_K) -> dict:
             'retrieval_source': str  # 'hybrid' hoặc 'pageindex'
         }
     """
-    chunks = retrieve(query, top_k=top_k)
+    chunks = retrieve(query, top_k=top_k, **kwargs)
     retrieval_source = chunks[0].get("source", "hybrid") if chunks else "none"
     if not chunks:
         return {

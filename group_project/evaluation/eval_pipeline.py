@@ -86,33 +86,33 @@ def evaluate_with_ragas(rag_pipeline, golden_dataset: list[dict]) -> dict:
 
     pip install ragas
     """
-    # TODO: Implement
-    #
-    # from ragas import evaluate
-    # from ragas.metrics import (
-    #     faithfulness,
-    #     answer_relevancy,
-    #     context_recall,
-    #     context_precision,
-    # )
-    # from datasets import Dataset
-    #
-    # eval_data = {"question": [], "answer": [], "contexts": [], "ground_truth": []}
-    #
-    # for item in golden_dataset:
-    #     result = rag_pipeline.generate_with_citation(item["question"])
-    #     eval_data["question"].append(item["question"])
-    #     eval_data["answer"].append(result["answer"])
-    #     eval_data["contexts"].append([c["content"] for c in result["sources"]])
-    #     eval_data["ground_truth"].append(item["expected_answer"])
-    #
-    # dataset = Dataset.from_dict(eval_data)
-    # result = evaluate(
-    #     dataset,
-    #     metrics=[faithfulness, answer_relevancy, context_recall, context_precision],
-    # )
-    # return result.to_pandas()
-    raise NotImplementedError("Implement evaluate_with_ragas")
+    from ragas import evaluate
+    from ragas.metrics import (
+        faithfulness,
+        answer_relevancy,
+        context_recall,
+        context_precision,
+    )
+    from datasets import Dataset
+
+    eval_data = {"question": [], "answer": [], "contexts": [], "ground_truth": []}
+
+    print("Đang chạy RAG pipeline để thu thập câu trả lời và context...")
+    for i, item in enumerate(golden_dataset):
+        print(f"  Đang xử lý câu hỏi {i+1}/{len(golden_dataset)}")
+        result = rag_pipeline(item["question"])
+        eval_data["question"].append(item["question"])
+        eval_data["answer"].append(result["answer"])
+        eval_data["contexts"].append([c["content"] for c in result["sources"]])
+        eval_data["ground_truth"].append(item["expected_answer"])
+
+    print("Bắt đầu đánh giá với RAGAS...")
+    dataset = Dataset.from_dict(eval_data)
+    result = evaluate(
+        dataset,
+        metrics=[faithfulness, answer_relevancy, context_recall, context_precision],
+    )
+    return result.to_pandas()
 
 
 # =============================================================================
@@ -164,21 +164,25 @@ def compare_configs(rag_pipeline, golden_dataset: list[dict]):
     - Config B: dense-only (không reranking)
     - Config C: hybrid search + PageIndex fallback
     """
-    # TODO: Implement A/B comparison
-    #
-    # configs = {
-    #     "hybrid_rerank": {"use_reranking": True, "alpha": 0.5},
-    #     "dense_only": {"use_reranking": False, "alpha": 1.0},
-    # }
-    #
-    # results = {}
-    # for config_name, params in configs.items():
-    #     # Run eval with this config
-    #     ...
-    #     results[config_name] = scores
-    #
-    # return results
-    raise NotImplementedError("Implement compare_configs")
+    from functools import partial
+    
+    # We will test two configurations:
+    # 1. hybrid_rerank: use_reranking = True
+    # 2. dense_only: use_reranking = False
+    configs = {
+        "hybrid_rerank": {"use_reranking": True},
+        "dense_only": {"use_reranking": False},
+    }
+    
+    results = {}
+    for config_name, params in configs.items():
+        print(f"\n--- Đang đánh giá cấu hình: {config_name} ---")
+        # Create a pipeline wrapper with the given kwargs
+        pipeline_wrapper = partial(rag_pipeline, **params)
+        df = evaluate_with_ragas(pipeline_wrapper, golden_dataset)
+        results[config_name] = df
+    
+    return results
 
 
 # =============================================================================
@@ -187,35 +191,67 @@ def compare_configs(rag_pipeline, golden_dataset: list[dict]):
 
 def export_results(results: dict, comparison: dict):
     """Export evaluation results to results.md"""
-    # TODO: Format and write results
-    #
-    # content = "# RAG Evaluation Results\n\n"
-    # content += "## Overall Scores\n\n"
-    # content += "| Metric | Score |\n|--------|-------|\n"
-    # ...
-    # content += "\n## A/B Comparison\n\n"
-    # ...
-    # content += "\n## Worst Performers\n\n"
-    # ...
-    # content += "\n## Recommendations\n\n"
-    # ...
-    #
-    # RESULTS_PATH.write_text(content, encoding="utf-8")
-    raise NotImplementedError("Implement export_results")
+    content = "# RAG Evaluation Results\n\n"
+    content += "## Cấu hình mặc định\n\n"
+    
+    if results is not None and not results.empty:
+        df_mean = results.mean(numeric_only=True)
+        content += "| Metric | Score |\n|--------|-------|\n"
+        for metric, score in df_mean.items():
+            content += f"| {metric} | {score:.4f} |\n"
+            
+    content += "\n## So sánh A/B (Các cấu hình Retrieval)\n\n"
+    if comparison:
+        content += "| Config | "
+        metrics = list(comparison.values())[0].select_dtypes(include='number').columns.tolist()
+        for metric in metrics:
+            content += f"{metric} | "
+        content += "\n|--------|" + "-------|" * len(metrics) + "\n"
+        
+        for config_name, df in comparison.items():
+            content += f"| {config_name} | "
+            means = df.mean(numeric_only=True)
+            for metric in metrics:
+                content += f"{means.get(metric, 0):.4f} | "
+            content += "\n"
+            
+    content += "\n*Báo cáo được tạo tự động bởi RAGAS.*\n"
+    
+    RESULTS_PATH.write_text(content, encoding="utf-8")
+    print(f"\nĐã xuất báo cáo ra {RESULTS_PATH}")
 
 
 if __name__ == "__main__":
     golden_dataset = load_golden_dataset()
     print(f"Loaded {len(golden_dataset)} test cases")
 
-    # TODO: Import your RAG pipeline
-    # from src.task10_generation import generate_with_citation
-    #
-    # Chọn 1 framework:
-    # results = evaluate_with_deepeval(pipeline, golden_dataset)
-    # results = evaluate_with_ragas(pipeline, golden_dataset)
-    # results = evaluate_with_trulens(pipeline, golden_dataset)
-    #
-    # comparison = compare_configs(pipeline, golden_dataset)
-    # export_results(results, comparison)
-    print("⚠ Implement evaluation logic and run again!")
+    # Import RAG pipeline
+    import sys
+    import os
+    # Add root folder to sys.path to import src
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+    
+    from src.task10_generation import generate_with_citation
+    
+    # Run evaluation with RAGAS
+    try:
+        print("Đánh giá cấu hình mặc định:")
+        results_df = evaluate_with_ragas(generate_with_citation, golden_dataset)
+        print("\n=== ĐÁNH GIÁ THÀNH CÔNG (Mặc định) ===")
+        print(results_df.mean(numeric_only=True))
+        
+        # Save raw results to CSV
+        csv_path = Path(__file__).parent / "ragas_results.csv"
+        results_df.to_csv(csv_path, index=False)
+        print(f"\nĐã lưu chi tiết đánh giá vào {csv_path}")
+        
+        print("\nBắt đầu chạy so sánh A/B...")
+        comparison = compare_configs(generate_with_citation, golden_dataset)
+        
+        export_results(results_df, comparison)
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"\nLỗi khi chạy RAGAS: {e}")
+        print("Lưu ý: RAGAS cần OPENAI_API_KEY để gọi mô hình Judge.")
