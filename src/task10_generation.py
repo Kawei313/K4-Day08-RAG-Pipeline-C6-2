@@ -21,6 +21,7 @@ UNVERIFIED_MESSAGE = "I cannot verify this information"
 
 SYSTEM_PROMPT = f"""You are a smart travel-guide assistant.
 Answer only from the provided context.
+Assintant in Vietnamese
 For every factual claim, add a citation in brackets like [source, n.d.].
 If the context does not contain enough evidence, say "{UNVERIFIED_MESSAGE}".
 Do not invent places, prices, schedules, addresses, or opening hours."""
@@ -96,37 +97,76 @@ def _fallback_answer(query: str, chunks: list[dict]) -> str:
 
 def _call_llm(query: str, context: str) -> str:
     """Call OpenAI/OpenRouter chat completion when an API key exists."""
-    api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        return ""
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {
+            "role": "user",
+            "content": (
+                f"Context:\n{context}\n\n"
+                f"Question:\n{query}\n\n"
+                "Answer with citations using only the citation labels above."
+            ),
+        },
+    ]
 
-    from openai import OpenAI
+    # Try OpenRouter first
+    openrouter_key = os.getenv("OPENROUTER_API_KEY")
+    if openrouter_key:
+        try:
+            from openai import OpenAI
+            client = OpenAI(api_key=openrouter_key, base_url="https://openrouter.ai/api/v1")
+            response = client.chat.completions.create(
+                model=OPENROUTER_MODEL,
+                messages=messages,
+                temperature=TEMPERATURE,
+                top_p=TOP_P,
+            )
+            return response.choices[0].message.content or ""
+        except Exception as e:
+            print(f"OpenRouter API Error: {e}")
 
-    client_kwargs = {"api_key": api_key}
-    if os.getenv("OPENROUTER_API_KEY"):
-        client_kwargs["base_url"] = "https://openrouter.ai/api/v1"
-        model = OPENROUTER_MODEL
-    else:
-        model = OPENAI_MODEL
+    # Fallback to OpenAI
+    openai_key = os.getenv("OPENAI_API_KEY")
+    if openai_key:
+        try:
+            from openai import OpenAI
+            client = OpenAI(api_key=openai_key)
+            response = client.chat.completions.create(
+                model=OPENAI_MODEL,
+                messages=messages,
+                temperature=TEMPERATURE,
+                top_p=TOP_P,
+            )
+            return response.choices[0].message.content or ""
+        except Exception as e:
+            print(f"OpenAI API Error: {e}")
 
-    client = OpenAI(**client_kwargs)
-    response = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {
-                "role": "user",
-                "content": (
-                    f"Context:\n{context}\n\n"
-                    f"Question:\n{query}\n\n"
-                    "Answer with citations using only the citation labels above."
-                ),
-            },
-        ],
-        temperature=TEMPERATURE,
-        top_p=TOP_P,
-    )
-    return response.choices[0].message.content or ""
+    # Fallback to Gemini
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    if gemini_key:
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=gemini_key)
+            model = genai.GenerativeModel(
+                model_name="gemini-1.5-flash",
+                system_instruction=SYSTEM_PROMPT
+            )
+            
+            prompt = messages[1]["content"]
+            generation_config = genai.types.GenerationConfig(
+                temperature=TEMPERATURE,
+                top_p=TOP_P,
+            )
+            
+            response = model.generate_content(
+                prompt,
+                generation_config=generation_config
+            )
+            return response.text
+        except Exception as e:
+            print(f"Gemini API Error: {e}")
+
+    return ""
 
 
 def generate_with_citation(query: str, top_k: int = TOP_K, **retrieve_kwargs) -> dict:
@@ -173,6 +213,10 @@ def generate_with_citation(query: str, top_k: int = TOP_K, **retrieve_kwargs) ->
 
 
 if __name__ == "__main__":
+    import sys
+    if sys.stdout.encoding.lower() != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+
     examples = [
         "Goi y lich trinh du lich Ha Long 2 ngay 1 dem",
         "Nhung mon an nen thu khi den Ha Long",
@@ -181,3 +225,4 @@ if __name__ == "__main__":
     for example in examples:
         result = generate_with_citation(example)
         print(f"\nQ: {example}\nA: {result['answer']}\n")
+
