@@ -152,7 +152,8 @@ def generate_with_citation(query: str, top_k: int = TOP_K, **kwargs) -> dict:
 
     context = format_context(reorder_for_llm(chunks))
     api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
-    if not api_key:
+    gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    if not (api_key or gemini_key):
         source = chunks[0].get("metadata", {}).get("source", "nguồn nội bộ")
         return {
             "answer": (
@@ -169,24 +170,43 @@ def generate_with_citation(query: str, top_k: int = TOP_K, **kwargs) -> dict:
         "Hãy trả lời theo SYSTEM PROMPT và chỉ dùng citation xuất hiện trong context."
     )
     try:
-        from openai import OpenAI
-        kwargs = {"api_key": api_key}
-        if os.getenv("OPENROUTER_API_KEY"):
-            kwargs["base_url"] = "https://openrouter.ai/api/v1"
-            model = OPENROUTER_MODEL
+        if gemini_key:
+            from langchain_google_genai import ChatGoogleGenerativeAI
+            from langchain_core.messages import SystemMessage, HumanMessage
+            
+            llm = ChatGoogleGenerativeAI(
+                model="gemini-1.5-flash",
+                google_api_key=gemini_key,
+                temperature=TEMPERATURE,
+                top_p=TOP_P,
+            )
+            messages = [
+                SystemMessage(content=SYSTEM_PROMPT),
+                HumanMessage(content=user_message)
+            ]
+            response = llm.invoke(messages)
+            answer = response.content or "Tôi không thể xác minh thông tin này từ nguồn hiện có."
         else:
-            model = OPENAI_MODEL
-        client = OpenAI(**kwargs)
-        response = client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message},
-            ],
-            temperature=TEMPERATURE,
-            top_p=TOP_P,
-        )
-        answer = response.choices[0].message.content or "Tôi không thể xác minh thông tin này từ nguồn hiện có."
+            from openai import OpenAI
+            kwargs = {"api_key": api_key}
+            if os.getenv("OPENROUTER_API_KEY"):
+                kwargs["base_url"] = "https://openrouter.ai/api/v1"
+                model = OPENROUTER_MODEL
+            else:
+                model = OPENAI_MODEL
+            client = OpenAI(**kwargs)
+            response = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_message},
+                ],
+                temperature=TEMPERATURE,
+                top_p=TOP_P,
+            )
+            answer = response.choices[0].message.content or "Tôi không thể xác minh thông tin này từ nguồn hiện có."
+    except ImportError:
+        answer = "Lỗi: Vui lòng chạy lệnh 'pip install langchain-google-genai' để sử dụng Gemini API."
     except Exception as error:
         answer = f"Tôi không thể tạo câu trả lời lúc này: {error}"
     return {"answer": answer, "sources": chunks, "retrieval_source": retrieval_source}
