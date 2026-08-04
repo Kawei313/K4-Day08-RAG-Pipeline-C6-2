@@ -67,6 +67,6 @@ def semantic_search(query: str, top_k: int = 10) -> list[dict]:
 
 
 if __name__ == "__main__":
-    sample_query = "return refund policy"
+    sample_query = "nhà hàng hải sản ngon"
     for result in semantic_search(sample_query, top_k=5):
         print(f"[{result['score']:.3f}] {result['content'][:100]}...")
