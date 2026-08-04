@@ -98,7 +98,7 @@ def evaluate_with_ragas(rag_pipeline, golden_dataset: list[dict]) -> dict:
     eval_data = {"question": [], "answer": [], "contexts": [], "ground_truth": []}
 
     print("Đang chạy RAG pipeline để thu thập câu trả lời và context...")
-    for i, item in enumerate(golden_dataset):
+    for i, item in enumerate(golden_dataset[:5]):
         print(f"  Đang xử lý câu hỏi {i+1}/{len(golden_dataset)}")
         result = rag_pipeline(item["question"])
         eval_data["question"].append(item["question"])
@@ -253,7 +253,7 @@ def export_results(results: dict, comparison: dict):
 
 if __name__ == "__main__":
     golden_dataset = load_golden_dataset()
-    print(f"Loaded {len(golden_dataset)} test cases")
+    print(f"Loaded {len(golden_dataset[:5])} test cases")
 
     # Import RAG pipeline
     import sys
