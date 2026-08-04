@@ -79,10 +79,12 @@ Xem code mẫu (DeepEval/RAGAS/TruLens) chi tiết trong `README.md` gốc mục
 
 | Thành viên | MSSV | Nhiệm vụ | Trạng thái |
 |-----------|------|----------|------------|
-| | | | |
-| | | | |
-| | | | |
-| | | | |
+| Nguyễn Trí Trung | 2A202601594 | Role 1 (Team Leader & RAG Architect) | |
+| Trần Đặng Vương Quốc Long | 2A202601744 | Role 2 (Data Engineering & Scraping Dev) | |
+| Nguyễn Văn Qúy | 2A202601508 | Role 3 (Vector Database & Dense Search Dev): Task 4 + 5 | |
+| Nguyễn Nhật Minh | 2A202601414 | Role 4 (Sparse Retrieval & Fallback Dev) | |
+| Phạm Việt Bách | 2A202601410 | Role 5 (Frontend UI & App Integration Dev) | |
+| Trần Lê Quý Đăng | 2A202601408 | Role 6 (Evaluation & QA Engineer) | Hoàn thành golden_dataset |
 
 ---
 

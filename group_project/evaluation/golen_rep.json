@@ -1,0 +1,77 @@
+[
+    {
+        "question": "Nên trải nghiệm ngủ đêm trên du thuyền hay thuê khách sạn trên bờ khi du lịch vịnh Hạ Long?",
+        "expected_answer": "Tùy thuộc vào nhu cầu: Ngủ đêm trên du thuyền (Cruise) mang lại trải nghiệm độc đáo, ngắm bình minh/hoàng hôn trực tiếp trên vịnh, bao gồm trọn gói ăn uống và các hoạt động như chèo kayak, câu mực (phù hợp cặp đôi, nghỉ dưỡng). Thuê khách sạn trên bờ linh hoạt hơn về thời gian, dễ dàng trải nghiệm ẩm thực đường phố, vui chơi tại Sun World và chi phí thường rẻ hơn (phù hợp gia đình, nhóm bạn thích sự nhộn nhịp).",
+        "expected_context": "So sánh các hình thức lưu trú tại Hạ Long, review du thuyền Hạ Long, kinh nghiệm du lịch nghỉ dưỡng."
+    },
+    {
+        "question": "Khám phá Bình Liêu (Quảng Ninh) mùa nào đẹp nhất và có những cột mốc nào cần check-in?",
+        "expected_answer": "Bình Liêu đẹp nhất vào mùa thu (tháng 10 - tháng 11) khi mùa hoa lau nở rộ trắng xóa các sườn đồi, hoặc mùa lúa chín (cuối tháng 7 - tháng 8). Những cột mốc biên giới nhất định phải check-in bao gồm: Cột mốc 1305 (Sống lưng khủng long), cột mốc 1297 (thiên đường hoa lau) và cột mốc 1300.",
+        "expected_context": "Cẩm nang du lịch bụi Bình Liêu, thông tin các cột mốc biên giới, kinh nghiệm săn hoa lau và phượt xe máy."
+    },
+    {
+        "question": "Kinh nghiệm thuê xe máy và các lưu ý an toàn khi tự lái xe khám phá đảo Quan Lạn?",
+        "expected_answer": "Bạn có thể thuê xe máy ngay tại cảng tàu hoặc qua các homestay/khách sạn trên đảo với giá khoảng 150.000 - 200.000 VNĐ/ngày. Lưu ý: Đường trên đảo đôi chỗ khá nhiều cát và hẹp, cần lái xe với tốc độ vừa phải, giữ chắc tay lái. Đảm bảo kiểm tra phanh, lốp xe và lượng xăng trước khi đi vì trên đảo không có nhiều trạm xăng.",
+        "expected_context": "Kinh nghiệm du lịch Quan Lạn tự túc, hướng dẫn thuê phương tiện và an toàn giao thông trên đảo."
+    },
+    {
+        "question": "Trải nghiệm câu mực đêm trên vịnh Hạ Long thường bắt đầu lúc mấy giờ và chi phí khoảng bao nhiêu?",
+        "expected_answer": "Hoạt động câu mực đêm thường bắt đầu từ khoảng 18h00 - 22h00. Nếu bạn đi tour lẻ ghép thuyền, chi phí dao động khoảng 300.000 - 500.000 VNĐ/người (đã bao gồm áo phao, cần câu, mồi và dịch vụ chế biến chiến lợi phẩm ngay trên tàu). Nếu thuê nguyên tàu nhỏ cho nhóm, giá khoảng 1.500.000 - 2.500.000 VNĐ/chuyến.",
+        "expected_context": "Bảng giá dịch vụ vui chơi giải trí trên Vịnh Hạ Long, review trải nghiệm câu mực đêm từ khách du lịch."
+    },
+    {
+        "question": "Gợi ý các điểm check-in sống ảo mang phong cách văn hóa, lịch sử tại Quảng Ninh.",
+        "expected_answer": "Các điểm check-in mang đậm dấu ấn văn hóa, lịch sử bao gồm: Bảo tàng Quảng Ninh (với kiến trúc khối kính đen tuyền độc đáo), Khu di tích Yên Tử, Đền Cửa Ông (Cẩm Phả), Cụm di tích Bạch Đằng (Quảng Yên) và khu phố cổ Hạ Long (gần Sun World) mô phỏng lại phố cổ Hội An và Hà Nội.",
+        "expected_context": "Danh sách các điểm tham quan văn hóa lịch sử tại Quảng Ninh, review các địa điểm chụp ảnh đẹp từ travel blogger."
+    },
+    {
+        "question": "Khách du lịch có bắt buộc phải đội mũ bảo hiểm khi thuê xe máy điện hoặc xe máy để đi dạo trên đảo Cô Tô, Quan Lạn không và mức phạt nếu vi phạm là bao nhiêu?",
+        "expected_answer": "Có, theo quy định An toàn giao thông (ATGT) hiện hành, mọi người tham gia giao thông bằng xe mô tô, xe gắn máy, xe đạp điện trên các đảo đều bắt buộc phải đội mũ bảo hiểm. Nếu vi phạm, mức phạt sẽ áp dụng theo quy định của pháp luật (thường dao động từ 400.000 đến 600.000 đồng theo Nghị định hiện hành).",
+        "expected_context": "Tài liệu chính sách, quy định ATGT đường bộ và các quy định xử phạt vi phạm hành chính trong lĩnh vực giao thông."
+    },
+    {
+        "question": "Nếu tôi vứt rác hoặc túi nilon bừa bãi xuống vịnh Hạ Long trong quá trình đi tàu tham quan thì có vi phạm gì không và có bị xử phạt không?",
+        "expected_answer": "Hành vi này vi phạm nghiêm trọng quy tắc văn hóa ứng xử du lịch và chính sách bảo vệ môi trường của tỉnh Quảng Ninh. Vịnh Hạ Long có quy định nghiêm ngặt cấm sử dụng và xả rác thải nhựa/túi nilon xuống vịnh. Hành vi xả rác bừa bãi tại khu di tích, danh lam thắng cảnh sẽ bị xử phạt vi phạm hành chính với mức phạt tiền tùy theo mức độ vi phạm về bảo vệ môi trường.",
+        "expected_context": "Văn bản chính sách về bảo vệ môi trường, quy định văn hóa ứng xử tại điểm du lịch và quy định xử phạt vi phạm hành chính về môi trường."
+    },
+    {
+        "question": "Theo các tin tức du lịch gần đây, ngoài vịnh Hạ Long thì có địa điểm danh lam thắng cảnh, nghỉ dưỡng nào ở Cẩm Phả đang thu hút đông đảo du khách tới check-in?",
+        "expected_answer": "Theo các bản tin du lịch gần đây, khu vực Vịnh Bái Tử Long và đặc biệt là khu tắm khoáng nóng Yoko Onsen Quang Hanh ở Cẩm Phả đang là điểm đến thu hút rất đông du khách. Nơi đây được yêu thích nhờ không gian kiến trúc chuẩn phong cách Nhật Bản và dịch vụ chăm sóc sức khỏe, tắm khoáng nóng tự nhiên chất lượng cao.",
+        "expected_context": "Các bài viết tin tức du lịch, bản tin cập nhật danh lam thắng cảnh, địa điểm du lịch và xu hướng du lịch mới tại Quảng Ninh."
+    },
+    {
+        "question": "Tôi có đọc tin tức về ẩm thực Quảng Ninh thấy nhắc đến 'bún bề bề'. Bề bề là con gì và cách nhận biết một bát bún bề bề ngon theo các chuyên gia ẩm thực?",
+        "expected_answer": "Bề bề (còn gọi là tôm tít, tôm búa) là một loại hải sản phổ biến ở vùng biển Quảng Ninh. Theo các tin tức và bài báo review ẩm thực, một bát bún bề bề ngon phải có nước dùng ngọt thanh tự nhiên từ xương và hải sản. Thịt bề bề phải được bóc vỏ khéo léo giữ nguyên con, thịt chắc, dai, ngọt và không bị bở, thường ăn kèm với chả mực, tôm, dọc mùng và rau sống.",
+        "expected_context": "Tin tức ẩm thực, bài báo review đặc sản địa phương và văn hóa ẩm thực Quảng Ninh."
+    },
+    {
+        "question": "Tôi tự lái xe ô tô từ Hà Nội xuống Hạ Long qua cao tốc. Để đảm bảo ATGT theo đúng quy định, tôi cần tuân thủ tốc độ giới hạn như thế nào trên tuyến đường này?",
+        "expected_answer": "Trên tuyến cao tốc Hà Nội - Hải Phòng - Hạ Long, người lái xe phải nghiêm chỉnh tuân thủ biển báo tốc độ. Thông thường, đoạn cao tốc Hà Nội - Hải Phòng cho phép tốc độ tối đa là 120km/h và tối thiểu là 60km/h. Đoạn cao tốc nối tiếp Hải Phòng - Hạ Long giới hạn tốc độ tối đa ở mức 100km/h. Bạn cần chú ý quan sát biển báo điện tử và biển báo cố định trên đường để điều chỉnh tốc độ cho đúng luật.",
+        "expected_context": "Tài liệu chính sách luật giao thông đường bộ, quy định và hướng dẫn ATGT trên đường cao tốc."
+    },
+    {
+        "question": "Khi đến tham quan và hành hương tại Chùa Ba Vàng hoặc Thiền viện Trúc Lâm Yên Tử, tôi cần tuân thủ những quy tắc văn hóa ứng xử nào để không vi phạm quy định của địa phương?",
+        "expected_answer": "Khi đến các cơ sở tôn giáo, tín ngưỡng, du khách phải tuân thủ các quy tắc văn hóa ứng xử tôn nghiêm: Phải mặc trang phục lịch sự, kín đáo (không mặc quần đùi, váy ngắn, áo hở hang); giữ trật tự, không nói to, chửi thề hay gây ồn ào; không tự ý thắp hương trong các điện thờ nếu có biển cấm; không bẻ cành, hái hoa và bỏ rác đúng nơi quy định.",
+        "expected_context": "Tài liệu quy định, chính sách về văn hóa ứng xử tại các cơ sở tôn giáo, tín ngưỡng và điểm tham quan tâm linh trên địa bàn tỉnh Quảng Ninh."
+    },
+    {
+        "question": "Đọc tin tức thấy bảo lên đỉnh Yên Tử giờ rất thuận tiện nhờ cáp treo. Xin hỏi có mấy tuyến cáp treo ở Yên Tử và lộ trình di chuyển của chúng ra sao?",
+        "expected_answer": "Khu di tích danh thắng Yên Tử hiện có 2 hệ thống tuyến cáp treo chính phục vụ du khách. Tuyến 1 (Cáp treo Hoàng Long) đưa du khách từ chân núi (khu vực Giải Oan) lên đến điểm gần chùa Hoa Yên. Tuyến 2 (Cáp treo Bạch Long) tiếp tục đưa du khách từ chùa Một Mái lên đến gần khu vực tượng Phật Hoàng Trần Nhân Tông và đỉnh chùa Đồng.",
+        "expected_context": "Tin tức du lịch, bản tin giới thiệu danh lam thắng cảnh, cập nhật dịch vụ vận chuyển hành khách tại khu di tích Yên Tử."
+    },
+    {
+        "question": "Làm sao để phân biệt được chả mực Hạ Long giã tay chuẩn và chả mực xay công nghiệp theo kinh nghiệm được chia sẻ trên các trang tin tức ẩm thực?",
+        "expected_answer": "Theo các chuyên trang ẩm thực, chả mực giã tay chuẩn Hạ Long khi nhai sẽ thấy độ giòn sần sật đặc trưng của các miếng râu mực và thịt mực được giã rối. Bề mặt miếng chả thường gồ ghề, không láng mịn, dai và có vị ngọt tự nhiên của hải sản. Trong khi đó, chả mực xay công nghiệp thường có bề mặt nhẵn mịn, cấu trúc đồng nhất, khi nhai có cảm giác bở hơn và thiếu độ giòn sần sật của hạt mực.",
+        "expected_context": "Các bài viết tin tức ẩm thực, mẹo vặt và review phân biệt, đánh giá đặc sản từ báo chí và chuyên gia ẩm thực."
+    },
+    {
+        "question": "Buổi tối ở Bãi Cháy tôi có uống 2 cốc bia hơi khi ăn hải sản. Sau đó tôi tự lái xe máy về khách sạn cách đó 1km thì có vi phạm luật ATGT không?",
+        "expected_answer": "Có, hành vi này vi phạm nghiêm trọng Luật Giao thông đường bộ. Theo quy định pháp luật về ATGT hiện hành, nghiêm cấm người điều khiển phương tiện (bao gồm cả xe máy) tham gia giao thông mà trong máu hoặc hơi thở có nồng độ cồn (Nồng độ cồn > 0). Hành vi này sẽ bị phạt tiền nặng và tước giấy phép lái xe. Bạn nên đi taxi, xe điện hoặc xe ôm để về khách sạn an toàn và đúng luật.",
+        "expected_context": "Tài liệu chính sách, pháp luật về ATGT, quy định xử phạt vi phạm nồng độ cồn đối với người điều khiển phương tiện cơ giới."
+    },
+    {
+        "question": "Theo các trang tin tức du lịch, phố cổ Bãi Cháy có điểm nhấn gì về kiến trúc và có các hoạt động nào hấp dẫn du khách vào buổi tối?",
+        "expected_answer": "Theo tin tức du lịch, Phố cổ Bãi Cháy (thường được biết đến với tên Bãi Cháy Old Quarter hay Little Vietnam) nổi bật với thiết kế giao thoa kiến trúc, một bên mô phỏng lại nét cổ kính của phố cổ Hội An với đèn lồng và mái ngói, một bên tái hiện vẻ đẹp của 36 phố phường Hà Nội cổ. Vào buổi tối, du khách thường tới đây dạo bộ, check-in chụp ảnh dưới ánh đèn lung linh, thưởng thức ẩm thực đường phố, nhâm nhi cà phê và tham gia các sự kiện nghệ thuật đường phố.",
+        "expected_context": "Tin tức du lịch, bài viết giới thiệu địa điểm du lịch mới, danh lam thắng cảnh và hoạt động giải trí về đêm tại Hạ Long."
+    }
+]

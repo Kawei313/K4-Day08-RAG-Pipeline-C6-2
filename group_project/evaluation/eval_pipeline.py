@@ -119,8 +119,8 @@ def evaluate_with_ragas(rag_pipeline, golden_dataset: list[dict]) -> dict:
             from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
             print("Phát hiện khóa API của Gemini! Cấu hình RAGAS sử dụng Gemini...")
             # Sử dụng flash để tiết kiệm chi phí và tốc độ nhanh, hoặc đổi sang pro nếu cần
-            gemini_llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=gemini_key)
-            gemini_embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=gemini_key)
+            gemini_llm = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", google_api_key=gemini_key)
+            gemini_embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-2", google_api_key=gemini_key)
             
             kwargs["llm"] = gemini_llm
             kwargs["embeddings"] = gemini_embeddings
@@ -196,13 +196,21 @@ def compare_configs(rag_pipeline, golden_dataset: list[dict]):
         "dense_only": {"use_reranking": False},
     }
     
+    import time # Thêm import time ở đầu file hoặc ngay trong hàm
+    
     results = {}
     for config_name, params in configs.items():
-        print(f"\n--- Đang đánh giá cấu hình: {config_name} ---")
-        # Create a pipeline wrapper with the given kwargs
+        print(f"\n\n--- Dang doi 20s de tranh Rate Limit cua API truoc khi chay: {config_name} ---")
+        time.sleep(20) # Ép script dừng 20 giây để né Rate Limit
+        
+        print(f"\n--- Dang danh gia cau hinh: {config_name} (chay 1 cau de test loi nan) ---")
         pipeline_wrapper = partial(rag_pipeline, **params)
-        df = evaluate_with_ragas(pipeline_wrapper, golden_dataset)
+        
+        # Chỉ lấy 1 câu đầu tiên để test xem có phải do Rate Limit không
+        df = evaluate_with_ragas(pipeline_wrapper, golden_dataset[:1])
+        print("\n") # Xuống dòng để tránh tqdm ghi đè log
         results[config_name] = df
+
     
     return results
 
@@ -257,17 +265,17 @@ if __name__ == "__main__":
     
     # Run evaluation with RAGAS
     try:
-        print("Đánh giá cấu hình mặc định:")
+        print("Danh gia cau hinh mac dinh:")
         results_df = evaluate_with_ragas(generate_with_citation, golden_dataset)
-        print("\n=== ĐÁNH GIÁ THÀNH CÔNG (Mặc định) ===")
+        print("\n\n=== DANH GIA THANH CONG (Mac dinh) ===")
         print(results_df.mean(numeric_only=True))
         
         # Save raw results to CSV
         csv_path = Path(__file__).parent / "ragas_results.csv"
         results_df.to_csv(csv_path, index=False)
-        print(f"\nĐã lưu chi tiết đánh giá vào {csv_path}")
+        print(f"\nDa luu chi tiet danh gia vao {csv_path}")
         
-        print("\nBắt đầu chạy so sánh A/B...")
+        print("\nBat dau chay so sanh A/B...")
         comparison = compare_configs(generate_with_citation, golden_dataset)
         
         export_results(results_df, comparison)
@@ -275,5 +283,6 @@ if __name__ == "__main__":
     except Exception as e:
         import traceback
         traceback.print_exc()
-        print(f"\nLỗi khi chạy RAGAS: {e}")
-        print("Lưu ý: RAGAS cần OPENAI_API_KEY (mặc định) hoặc GEMINI_API_KEY/GOOGLE_API_KEY để gọi mô hình Judge.")
+        print(f"\nLoi khi chay RAGAS: {e}")
+        print("Luu y: RAGAS can OPENAI_API_KEY (mac dinh) hoac GEMINI_API_KEY/GOOGLE_API_KEY de goi mo hinh Judge.")
+

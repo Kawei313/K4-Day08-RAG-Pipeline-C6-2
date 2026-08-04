@@ -7,7 +7,7 @@ from .task6_lexical_search import lexical_search
 from .task7_reranking import rerank, rerank_rrf
 from .task8_pageindex_vectorless import pageindex_search
 
-SCORE_THRESHOLD = 0.3
+SCORE_THRESHOLD = 0.6
 DEFAULT_TOP_K = 5
 RERANK_METHOD = "rrf"
 

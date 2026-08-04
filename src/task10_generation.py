@@ -14,7 +14,7 @@ TOP_K = 5
 TOP_P = 0.9
 TEMPERATURE = 0.3
 
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemma-4-31b-it")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
 UNVERIFIED_MESSAGE = "I cannot verify this information"
