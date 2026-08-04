@@ -50,10 +50,10 @@ Xem code mẫu (DeepEval/RAGAS/TruLens) chi tiết trong `README.md` gốc mục
 
 ### Deliverable Evaluation
 
-- [ ] File `group_project/evaluation/golden_dataset.json` — 15+ cặp Q&A
-- [ ] File `group_project/evaluation/eval_pipeline.py` — script chạy evaluation
-- [ ] File `group_project/evaluation/results.md` — bảng điểm + phân tích
-- [ ] So sánh A/B ít nhất 2 configs
+- [x] File `group_project/evaluation/golden_dataset.json` — 15+ cặp Q&A
+- [x] File `group_project/evaluation/eval_pipeline.py` — script chạy evaluation
+- [x] File `group_project/evaluation/results.md` — bảng điểm + phân tích
+- [x] So sánh A/B ít nhất 2 configs
 
 ---
 
@@ -69,8 +69,66 @@ Xem code mẫu (DeepEval/RAGAS/TruLens) chi tiết trong `README.md` gốc mục
 
 ## Kiến Trúc Hệ Thống
 
-```
-[Vẽ diagram kiến trúc ở đây]
+```mermaid
+flowchart TD
+    subgraph Ingestion["📥 Data Ingestion (Task 1–3)"]
+        T1["Task 1\nCollect Legal Docs\ntask1_collect_legal_docs.py"]
+        T2["Task 2\nCrawl News\ntask2_crawl_news.py"]
+        T3["Task 3\nConvert to Markdown\ntask3_convert_markdown.py"]
+        T1 --> T3
+        T2 --> T3
+    end
+
+    subgraph Indexing["🗂️ Chunking & Indexing (Task 4)"]
+        T4["Task 4\nChunking + Vector Indexing\ntask4_chunking_indexing.py"]
+        T3 --> T4
+    end
+
+    subgraph Storage["🗄️ Storage"]
+        VDB[("Vector Store\nDense Embeddings")]
+        BM25[("BM25 Index\nSparse")]
+        T4 --> VDB
+        T4 --> BM25
+    end
+
+    subgraph Retrieval["🔍 Hybrid Retrieval Pipeline (Task 5–9)"]
+        Q["User Query"]
+        T5["Task 5\nSemantic Search\nDense - task5_semantic_search.py"]
+        T6["Task 6\nLexical Search\nBM25 - task6_lexical_search.py"]
+        T7["Task 7\nRRF Fusion + Reranking\nCrossEncoder - task7_reranking.py"]
+        T8["Task 8\nPageIndex Fallback\ntask8_pageindex_vectorless.py"]
+        T9["Task 9\nRetrieval Orchestration\ntask9_retrieval_pipeline.py"]
+        VDB --> T5
+        BM25 --> T6
+        Q --> T5
+        Q --> T6
+        T5 --> T7
+        T6 --> T7
+        T7 --> T9
+        T8 -->|"low confidence fallback"| T9
+    end
+
+    subgraph Generation["💬 Generation (Task 10)"]
+        T10["Task 10\nGenerate with Citation\ntask10_generation.py"]
+        T9 --> T10
+        T10 --> Answer["Answer + Source Citations"]
+    end
+
+    subgraph Evaluation["📊 Evaluation"]
+        GD["Golden Dataset\n15+ Q&A pairs"]
+        EP["eval_pipeline.py\nRAGAS Framework"]
+        RES["results.md\nFaithfulness / Relevancy\nRecall / Precision"]
+        GD --> EP
+        Answer --> EP
+        EP --> RES
+    end
+
+    subgraph UI["🖥️ Frontend"]
+        APP["app.py\nStreamlit / Chainlit\nChat UI + Conversation Memory"]
+    end
+
+    Q --> APP
+    Answer --> APP
 ```
 
 ---
@@ -79,12 +137,12 @@ Xem code mẫu (DeepEval/RAGAS/TruLens) chi tiết trong `README.md` gốc mục
 
 | Thành viên | MSSV | Nhiệm vụ | Trạng thái |
 |-----------|------|----------|------------|
-| Nguyễn Trí Trung | 2A202601594 | Role 1 (Team Leader & RAG Architect) | |
-| Trần Đặng Vương Quốc Long | 2A202601744 | Role 2 (Data Engineering & Scraping Dev) | |
-| Nguyễn Văn Qúy | 2A202601508 | Role 3 (Vector Database & Dense Search Dev): Task 4 + 5 | |
-| Nguyễn Nhật Minh | 2A202601414 | Role 4 (Sparse Retrieval & Fallback Dev) | |
-| Phạm Việt Bách | 2A202601410 | Role 5 (Frontend UI & App Integration Dev) | |
-| Trần Lê Quý Đăng | 2A202601408 | Role 6 (Evaluation & QA Engineer) | Hoàn thành golden_dataset |
+| Nguyễn Trí Trung | 2A202601594 | Role 1 (Team Leader & RAG Architect) | Hoàn thành |
+| Trần Đặng Vương Quốc Long | 2A202601744 | Role 2 (Data Engineering & Scraping Dev) | Hoàn thành |
+| Nguyễn Văn Qúy | 2A202601508 | Role 3 (Vector Database & Dense Search Dev): Task 4 + 5 | Hoàn thành |
+| Nguyễn Nhật Minh | 2A202601414 | Role 4 (Sparse Retrieval & Fallback Dev) | Hoàn thành |
+| Phạm Việt Bách | 2A202601410 | Role 5 (Frontend UI & App Integration Dev) | Hoàn thành |
+| Trần Lê Quý Đăng | 2A202601408 | Role 6 (Evaluation & QA Engineer) | Hoàn thành |
 
 ---
 

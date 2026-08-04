@@ -200,14 +200,16 @@ def compare_configs(rag_pipeline, golden_dataset: list[dict]):
     
     results = {}
     for config_name, params in configs.items():
-        print(f"\n\n--- Dang doi 20s de tranh Rate Limit cua API truoc khi chay: {config_name} ---")
+        print(f"\n\n--- Đang đợi 20s để tránh Rate Limit của API trước khi chạy: {config_name} ---")
         time.sleep(20) # Ép script dừng 20 giây để né Rate Limit
         
-        print(f"\n--- Dang danh gia cau hinh: {config_name} (chay 1 cau de test loi nan) ---")
+        print(f"\n--- Đang đánh giá cấu hình: {config_name} (chạy 1 câu để test lỗi nan) ---")
         pipeline_wrapper = partial(rag_pipeline, **params)
         
         # Chỉ lấy 1 câu đầu tiên để test xem có phải do Rate Limit không
-        df = evaluate_with_ragas(pipeline_wrapper, golden_dataset[:1])
+        df = evaluate_with_ragas(pipeline_wrapper, golden_dataset[:5])
+        print(f"\n\n=== KET QUA SO SANH: {config_name} ===")
+        print(df.mean(numeric_only=True))
         print("\n") # Xuống dòng để tránh tqdm ghi đè log
         results[config_name] = df
 
@@ -265,20 +267,20 @@ if __name__ == "__main__":
     
     # Run evaluation with RAGAS
     try:
-        print("Danh gia cau hinh mac dinh:")
-        results_df = evaluate_with_ragas(generate_with_citation, golden_dataset)
-        print("\n\n=== DANH GIA THANH CONG (Mac dinh) ===")
-        print(results_df.mean(numeric_only=True))
+        # print("Danh gia cau hinh mac dinh:")
+        # results_df = evaluate_with_ragas(generate_with_citation, golden_dataset)
+        # print("\n\n=== DANH GIA THANH CONG (Mac dinh) ===")
+        # print(results_df.mean(numeric_only=True))
         
-        # Save raw results to CSV
-        csv_path = Path(__file__).parent / "ragas_results.csv"
-        results_df.to_csv(csv_path, index=False)
-        print(f"\nDa luu chi tiet danh gia vao {csv_path}")
+        # # Save raw results to CSV
+        # csv_path = Path(__file__).parent / "ragas_results.csv"
+        # results_df.to_csv(csv_path, index=False)
+        # print(f"\nDa luu chi tiet danh gia vao {csv_path}")
         
         print("\nBat dau chay so sanh A/B...")
         comparison = compare_configs(generate_with_citation, golden_dataset)
         
-        export_results(results_df, comparison)
+        # export_results(results_df, comparison)
         
     except Exception as e:
         import traceback
