@@ -115,5 +115,5 @@ def lexical_search(query: str, top_k: int = 10) -> list[dict]:
 
 
 if __name__ == "__main__":
-    for result in lexical_search("lich trinh du lich ha giang", top_k=5):
+    for result in lexical_search("Nhà hàng hải sản ngon", top_k=5):
         print(f"[{result['score']:.3f}] {result['content'][:100]}...")
