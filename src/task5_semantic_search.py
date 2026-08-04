@@ -1,41 +1,68 @@
-"""Task 5 — dense semantic retrieval over the Chroma collection from Task 4."""
+"""Task 5 - Dense semantic retrieval over the ChromaDB index from Task 4."""
 
-from .task4_chunking_indexing import get_collection, get_embedding_model
+from .task4_chunking_indexing import _fallback_embedding, get_collection, get_embedding_model
+
+
+def _embed_query(query: str) -> list[float]:
+    """Embed the query with the same model/configuration used in Task 4."""
+    try:
+        model = get_embedding_model()
+        return model.encode(query, normalize_embeddings=True).tolist()
+    except Exception:
+        return _fallback_embedding(query)
+
+
+def _distance_to_score(distance: float) -> float:
+    """
+    Convert Chroma cosine distance to a similarity-like score.
+
+    The collection in Task 4 is configured with hnsw:space="cosine", where lower
+    distance is better. The returned score uses higher-is-better semantics.
+    """
+    return round(max(0.0, 1.0 - float(distance)), 4)
 
 
 def semantic_search(query: str, top_k: int = 10) -> list[dict]:
-    """Return the most semantically similar chunks, sorted by cosine similarity."""
-    if not query.strip() or top_k <= 0:
+    """
+    Search the vector store for chunks semantically similar to the query.
+
+    Returns:
+        List of {"content": str, "score": float, "metadata": dict}
+    """
+    query = query.strip()
+    if not query or top_k <= 0:
         return []
 
     try:
         collection = get_collection()
         count = collection.count()
-        if count == 0:
-            return []
-        query_vector = get_embedding_model().encode(
-            query, normalize_embeddings=True
-        ).tolist()
-        raw = collection.query(
-            query_embeddings=[query_vector],
-            n_results=min(top_k, count),
-            include=["documents", "metadatas", "distances"],
-        )
     except Exception:
-        # Before the Task 4 dependencies/index are ready, let hybrid retrieval use BM25.
         return []
 
+    if count == 0:
+        return []
+
+    query_vector = _embed_query(query)
+    raw_results = collection.query(
+        query_embeddings=[query_vector],
+        n_results=min(top_k, count),
+        include=["documents", "metadatas", "distances"],
+    )
+
+    documents = raw_results.get("documents", [[]])[0]
+    metadatas = raw_results.get("metadatas", [[]])[0]
+    distances = raw_results.get("distances", [[]])[0]
+
     results = []
-    for document, metadata, distance in zip(
-        raw.get("documents", [[]])[0],
-        raw.get("metadatas", [[]])[0],
-        raw.get("distances", [[]])[0],
-    ):
-        results.append({
-            "content": document,
-            "score": round(max(0.0, 1.0 - float(distance)), 4),
-            "metadata": metadata or {},
-        })
+    for document, metadata, distance in zip(documents, metadatas, distances):
+        results.append(
+            {
+                "content": document,
+                "score": _distance_to_score(distance),
+                "metadata": metadata or {},
+            }
+        )
+
     return sorted(results, key=lambda item: item["score"], reverse=True)[:top_k]
 
 
